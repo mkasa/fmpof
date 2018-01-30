@@ -68,7 +68,10 @@ DB password:
 # Technical notes
 The database of fmpof is a text file, where one password is stored in a
 single line. Each password is encrypted using AES with a DB
-password plus a random salt of 12 bytes.
+password plus a random salt of 12 bytes, and then is Base64 encoded.
+A single-line-single-record principle allows you to easily edit
+database files (e.g: concatenating two or more files, manage files
+with DCVS, etc.).
 
 # Licenses
 MIT
