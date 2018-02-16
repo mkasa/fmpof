@@ -1,5 +1,4 @@
 
-
 from __future__ import print_function
 import builtins
 import past
@@ -10,6 +9,7 @@ import getpass
 import argparse
 import struct
 import base64
+import zipfile
 from Crypto.Cipher import AES
 from Crypto import Random
 
@@ -134,6 +134,7 @@ def get_file_type(file_name):
     if file_name.endswith(".docx"): return "word"
     if file_name.endswith(".ppt"): return "ppt"
     if file_name.endswith(".pptx"): return "ppt"
+    if file_name.endswith(".zip"): return "zip"
     error_exit("Unknown file type for file '%s'" % file_name)
 
 
@@ -148,6 +149,8 @@ def open_file(msoffice_file_name, db_file_name, raw_password, args):
         office_obj = win32com.client.gencache.EnsureDispatch('Word.Application')
     elif file_type == "ppt":
         office_obj = win32com.client.gencache.EnsureDispatch('Powerpoint.Application')
+    elif file_type == "zip":
+        office_obj = None
     else:
         error_exit("Logic error")
 
@@ -164,6 +167,8 @@ def open_file(msoffice_file_name, db_file_name, raw_password, args):
                 document = office_obj.Documents.Open(msoffice_file_name, False, False, False, p)
             elif file_type == "ppt":
                 presentaion = office_obj.Presentations.open(msoffice_file_name + ":" + p + "::")
+            elif file_type == "zip":
+                zipfile = zipfile.ZipFile.open(msoffice_file_name, mode, p)
             else:
                 error_exit("Logic error")
             print("")
@@ -171,7 +176,8 @@ def open_file(msoffice_file_name, db_file_name, raw_password, args):
                 print("'%s' was the password." % p)
             else:
                 print("Tada! It opened.")
-            office_obj.Visible = True
+            if file_type != "zip":
+                office_obj.Visible = True
             worked = True
             break
         except win32com.client.pywintypes.com_error:
