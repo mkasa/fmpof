@@ -100,6 +100,8 @@ def list_passwords(file_name, password):
 
 
 def add_password(file_name, password, new_pass_line):
+    # Verify the DB password before asking a new password to store.
+    _ = get_passwords(file_name, password)
     try:
         with open(file_name, "a") as f:
             if new_pass_line == None:
